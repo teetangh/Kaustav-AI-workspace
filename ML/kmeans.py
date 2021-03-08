@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # Input Process(architecture/design/workflow) Output => helps in coding
 import numpy as np
 import random

@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # WORK IN PROGRESS
 import numpy as np
 
