@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import numpy as np
 import functools
+import matplotlib.pyplot as plt
 
 
 def distance(X, Y):
@@ -52,6 +53,12 @@ def main():
 
         k_nearest_neighbours = [R[distances[i][0]] for i in range(k)]
         print("k_nearest_neighbours:",  k_nearest_neighbours)
+
+    # plt.scatter(R[0], R[1])
+    # plt.scatter(Q[0], Q[1])
+    plt.scatter(*zip(*R))
+    plt.scatter(*zip(*Q))
+    plt.show()
 
 
 if __name__ == "__main__":

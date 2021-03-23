@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
 import numpy as np
+import matplotlib.pyplot as plt
+
+
+def abline(slope, intercept):
+    """Plot a line from slope and intercept"""
+    axes = plt.gca()
+    x_vals = np.array(axes.get_xlim())
+    y_vals = intercept + slope * x_vals
+    plt.plot(x_vals, y_vals, '--')
 
 
 def main():
@@ -32,6 +41,11 @@ def main():
 
     print("y = mx + c with c and m values respectively are:")
     print(c, m)
+
+    plt.scatter(X, Y)
+    abline(m, c)
+
+    plt.show()
 
 
 if __name__ == '__main__':
