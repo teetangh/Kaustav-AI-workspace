@@ -1,4 +1,7 @@
 tempCodeRunnerFile.py
+data/
+dataset/
+datasets/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
