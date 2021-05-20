@@ -4,16 +4,33 @@ import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
 import torchvision
-from torchvision.utils import make_grid, save_image
+
+# It is necessary to have both the model, and the data on the same device, either CPU or GPU, for the model to process data.
+# Data on CPU and model on GPU, or vice-versa, will result in a Runtime error
+
+# device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-def lenetModel():
+class LenetModel(nn.Module):
 
-    def __init__(self):
-        pass
+    def __init__(self, conv1, pool1, conv2, pool2, fc1, fc2):
+        super(LenetModel, self).__init__()
+        self.conv1 = conv1
+        self.pool1 = pool1
+        self.conv2 = conv2
+        self.pool2 = pool2
+        self.fc1 = fc1
+        self.fc2 = fc2
 
-    def forward():
-        pass
+    def forward(self, input):
+        x = self.conv1(input)
+        x = self.pool1(x)
+        x = self.conv2(x)
+        x = self.pool2(x)
+        x = self.fc1(x)
+        x = self.fc2(x)
+
+        return x
 
 
 def imshow(img):
