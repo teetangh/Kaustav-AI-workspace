@@ -1,8 +1,10 @@
+from collections import OrderedDict
 import numpy as np
 import matplotlib.pyplot as plt
 
 import torch
 import torch.nn as nn
+from torch.nn.modules.flatten import Flatten
 import torchvision
 
 # It is necessary to have both the model, and the data on the same device, either CPU or GPU, for the model to process data.
@@ -13,22 +15,39 @@ import torchvision
 
 class LenetModel(nn.Module):
 
-    def __init__(self, conv1, pool1, conv2, pool2, fc1, fc2):
+    def __init__(self, n_classes):
         super(LenetModel, self).__init__()
-        self.conv1 = conv1
-        self.pool1 = pool1
-        self.conv2 = conv2
-        self.pool2 = pool2
-        self.fc1 = fc1
-        self.fc2 = fc2
+
+        self.feature_extractor = nn.Sequential(OrderedDict([
+            ("conv1", nn.Conv2d(in_channels=1, out_channels=6, kernel_size=5, stride=1)),
+            ("tanh1", nn.Tanh()),
+
+            ("avgpool1", nn.AvgPool2d(kernel_size=2, stride=2))
+            ("tanh2", nn.Tanh()),
+
+            ("conv2", nn.Conv2d(in_channels=6, out_channels=16, kernel_size=5, stride=1)),
+            ("tanh3", nn.Tanh()),
+
+            ("avgpool2", nn.AvgPool2d(kernel_size=+2, stride=2))
+            ("tanh4", nn.Tanh()),
+
+            ("conv2", nn.Conv2d(in_channels=16,
+             out_channels=120, kernel_size=5, stride=1)),
+            ("tanh5", nn.Tanh()),
+
+        ]))
+
+        self.classifier = nn.Sequential(OrderedDict([
+            ("linear1", nn.Linear(in_channels=120, out_channels=84, bias=True)),
+            ("tanh6", nn.Tanh()),
+            ("linear2", nn.Linear(in_channels=84, out_channels=n_classes, bias=True))
+        ]))
 
     def forward(self, input):
-        x = self.conv1(input)
-        x = self.pool1(x)
-        x = self.conv2(x)
-        x = self.pool2(x)
-        x = self.fc1(x)
-        x = self.fc2(x)
+        x = self.feature_extractor(input)
+        x = torch.flatten(x, 1)
+        logits = self.classifier(x)
+        probs = torch.functional.softmax(logits,dim=-1)
 
         return x
 
@@ -40,30 +59,7 @@ def imshow(img):
     plt.show()
 
 
-def main():
-
-    batch_size = 4
-    transform = torchvision.transforms.Compose(
-        [
-            torchvision.transforms.ToTensor(),
-            torchvision.transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
-        ]
-    )
-
-    train_set = torchvision.datasets.CIFAR10(
-        root="./data/", train=True, transform=transform, download=True)
-    train_loader = torch.utils.data.DataLoader(
-        dataset=train_set, batch_size=batch_size,  shuffle=True, num_workers=2)
-
-    test_set = torchvision.datasets.CIFAR10(
-        root="./data/", train=False, transform=transform, download=True)
-    test_loader = torch.utils.data.DataLoader(
-        dataset=test_set, batch_size=batch_size,  shuffle=True, num_workers=2)
-
-    # classes = ('plane', 'car', 'bird', 'cat',
-    #            'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
-
-    # imshow(train_set[0])
+def show_class_description(train_set, train_loader, batch_size):
 
     classes = train_set.classes
     print("classes: ", classes)
@@ -82,6 +78,34 @@ def main():
 
     imshow(torchvision.utils.make_grid(images))
     print(' '.join('%5s' % classes[labels[j]] for j in range(batch_size)))
+
+
+def main():
+
+    batch_size = 4
+    transform = torchvision.transforms.Compose(
+        [
+            torchvision.transforms.Resize(size=(32, 32)),
+            torchvision.transforms.Normalize((0.5,), (0.5,)),
+            torchvision.transforms.ToTensor()
+        ]
+    )
+
+    train_set = torchvision.datasets.MNIST(
+        root="./data/", train=True, transform=transform, download=True)
+    train_loader = torch.utils.data.DataLoader(
+        dataset=train_set, batch_size=batch_size,  shuffle=True, num_workers=2)
+
+    test_set = torchvision.datasets.MNIST(
+        root="./data/", train=False, transform=transform, download=True)
+    test_loader = torch.utils.data.DataLoader(
+        dataset=test_set, batch_size=batch_size,  shuffle=True, num_workers=2)
+
+    # classes = ('plane', 'car', 'bird', 'cat',
+    #            'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
+    # imshow(train_set[0])
+
+    show_class_description(train_set, train_loader, batch_size)
 
 
 if __name__ == "__main__":
