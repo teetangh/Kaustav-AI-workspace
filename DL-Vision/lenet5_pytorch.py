@@ -47,10 +47,27 @@ class LenetModel(nn.Module):
         x = self.feature_extractor(input)
         x = torch.flatten(x, 1)
         logits = self.classifier(x)
-        probs = torch.functional.softmax(logits,dim=-1)
+        probs = torch.functional.softmax(logits, dim=0)
 
-        return x
+        return probs
 
+
+##############################################
+
+
+def train():
+    pass
+
+
+def validate():
+    pass
+
+
+def training_loop():
+    pass
+
+
+##############################################
 
 def imshow(img):
     img = img/2 + 0.5
@@ -79,6 +96,8 @@ def show_class_description(train_set, train_loader, batch_size):
     imshow(torchvision.utils.make_grid(images))
     print(' '.join('%5s' % classes[labels[j]] for j in range(batch_size)))
 
+##############################################
+
 
 def main():
 
@@ -96,10 +115,10 @@ def main():
     train_loader = torch.utils.data.DataLoader(
         dataset=train_set, batch_size=batch_size,  shuffle=True, num_workers=2)
 
-    test_set = torchvision.datasets.MNIST(
+    val_set = torchvision.datasets.MNIST(
         root="./data/", train=False, transform=transform, download=True)
-    test_loader = torch.utils.data.DataLoader(
-        dataset=test_set, batch_size=batch_size,  shuffle=True, num_workers=2)
+    val_loader = torch.utils.data.DataLoader(
+        dataset=val_set, batch_size=batch_size,  shuffle=True, num_workers=2)
 
     # classes = ('plane', 'car', 'bird', 'cat',
     #            'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
